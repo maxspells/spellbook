@@ -6,8 +6,8 @@ import importlib
 import modules.spellbook as spellbook
 from modules.spellbook import *
 
-def load_spells(module_name):
-    module = importlib.import_module(module_name)
+def load_spells(module_name): # checks spellbook.py for classes. If it's a class, imports it and adds 
+    module = importlib.import_module(module_name) # it to an array and returns array
     list = []
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj):
@@ -27,18 +27,14 @@ class spell:
 
 book = [],[]
 
-def storespell(i):
+def storespell(i): #sorts spell into book array by spell level
     book[i.sp_lvl].append(i)
 
-def createspell(i,x):
+def createspell(i,x): #creates spell class object and stores it....this might be redundant
     x = spell(i.sp_lvl,i.name,i.desc,i.range,i.vComp,i.sComp,i.mComp,i.damage)
     storespell(x)
 
-# createspell(spellbook.detect_magic,spellbook.detect_magic.name)
-# createspell(spellbook.light,spellbook.light.name)
-# createspell(spellbook.magic_missile,spellbook.magic_missile.name)
-
-def printout(z):
+def printout(z): #debug printing
     for x in book[z]:
         print(x.name)
         print(x.desc)
@@ -46,4 +42,6 @@ def printout(z):
 
 allspells = load_spells('modules.spellbook')
 for i in allspells:
-    print(i.name)
+    createspell(i,i.name)
+printout(0)
+printout(1)

@@ -8,8 +8,6 @@
 #     mComp = 
 #     damage = 
 
-
-
 class detect_magic:
     sp_lvl = 0
     name = "Detect Magic"
@@ -37,6 +35,7 @@ class detect_magic:
     sComp = True
     mComp = "None"
     damage = "N/A"
+    
 class light:
     sp_lvl = 0
     name = "light"
