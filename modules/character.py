@@ -6,4 +6,4 @@ class chr:
     int = 20
     wis = 16
     cha = 10
-    spellsperday = [0,4,2,1,0,0,0,0,0,0]
+    spellsperday = [4,2,1,0,0,0,0,0,0,0]

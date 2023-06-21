@@ -52,7 +52,7 @@ def modifier(char):
             mod = 7
     return mod
 
-def bonusspells(char):#broken right now :(
+def bonusspells(char):
     bonus = [0,0,0,0,0,0,0,0,0,0]
     match char.int:
         case 12 | 13:
@@ -73,18 +73,16 @@ def bonusspells(char):#broken right now :(
 
 def perday(char):
     spd = []
+    z = 0
     bonus = bonusspells(char)
     core = char.spellsperday
-    for i in range(0-9):
-        x = char.spellsperday.index(i)
-        spd.append(core[x]+bonus[x])
-        print("index =",x)
+    for i in range(len(core)):
+        spd.append(core[z]+bonus[z])
+        print("index =",z)
+        z+=1
     return spd
     
 
 allspells = load_spells('modules.spellbook')
 for i in allspells:
     storespell(i)
-
-sal = perday(chr)
-print(sal)
