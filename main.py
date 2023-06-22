@@ -10,8 +10,9 @@ from modules.spellbook import *
 book = [],[]
 prepared = [],[]
 
-def load_spells(module_name): # checks spellbook.py for classes. If it's a class, imports it and adds 
-    module = importlib.import_module(module_name) # it to an array and returns array
+# checks spellbook.py for classes. If it's a class, imports it and adds it to an array and returns array
+def load_spells(module_name): 
+    module = importlib.import_module(module_name)
     list = []
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj):
@@ -21,13 +22,13 @@ def load_spells(module_name): # checks spellbook.py for classes. If it's a class
 def storespell(i): #sorts spell into book array by spell level
     book[i.sp_lvl].append(i)
 
-def printout(z): #debug printing
+def printout(z): #debug printing function
     for x in book[z]:
         print(x.name)
         print(x.desc)
         print("_________________________________________________")
 
-def modifier(char):
+def modifier(char): #calculates intelligence modifier for spells that use it
     mod = 0
     match char.int:
         case 6 | 7:
@@ -52,7 +53,7 @@ def modifier(char):
             mod = 7
     return mod
 
-def bonusspells(char):
+def bonusspells(char): #calculates bonus spells based on intelligence stat
     bonus = [0,0,0,0,0,0,0,0,0,0]
     match char.int:
         case 12 | 13:
@@ -71,18 +72,22 @@ def bonusspells(char):
             bonus = [0,2,2,2,1,1,1,1,0,0]
     return bonus
 
-def perday(char):
+def perday(char): #calculates how many spells per day can be prepared per spell level
     spd = []
     z = 0
     bonus = bonusspells(char)
     core = char.spellsperday
     for i in range(len(core)):
-        spd.append(core[z]+bonus[z])
-        print("index =",z)
+        if(core[z]>0): # if you can't cast spells of this level, skips adding bonus
+            spd.append(core[z]+bonus[z]) 
+        else:
+            spd.append(core[z])
         z+=1
     return spd
-    
 
 allspells = load_spells('modules.spellbook')
 for i in allspells:
     storespell(i)
+
+spellsper = perday(chr)
+print(spellsper)
