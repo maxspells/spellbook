@@ -63,7 +63,7 @@ def bonusspells(char): #calculates bonus spells based on intelligence stat
         case 16 | 17:
             bonus = [0,1,1,1,0,0,0,0,0,0]
         case 18 | 19:
-            bonus = [0,1,1,1,1,0,0,0,0]
+            bonus = [0,1,1,1,1,0,0,0,0,0]
         case 20 | 21:
             bonus = [0,2,1,1,1,1,0,0,0,0]
         case 22 | 23:
@@ -88,6 +88,3 @@ def perday(char): #calculates how many spells per day can be prepared per spell 
 allspells = load_spells('modules.spellbook')
 for i in allspells:
     storespell(i)
-
-spellsper = perday(chr)
-print(spellsper)
