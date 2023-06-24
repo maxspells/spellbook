@@ -24,6 +24,7 @@ def storespell(i): #sorts spell into book array by spell level
 def printout(z): #debug printing
     for x in book[z]:
         print(x.name)
+        print(x.range)
         print(x.desc)
         print("_________________________________________________")
 
@@ -78,11 +79,30 @@ def perday(char):
     core = char.spellsperday
     for i in range(len(core)):
         spd.append(core[z]+bonus[z])
-        print("index =",z)
         z+=1
     return spd
-    
+
+sp_perday = perday(chr)
 
 allspells = load_spells('modules.spellbook')
 for i in allspells:
     storespell(i)
+
+#[4, 4, 2, 1, 1, 1, 0, 0, 0, 0]
+def prepare():
+    dex = 0
+    availableslots = perday(chr)
+    while(availableslots[dex]>0):
+        if (dex<=(len(book)-1)):
+            for spell in book[dex]:
+                print(f"preparing level {spell.sp_lvl} spells")
+                if availableslots[dex]>0:
+                    if input(f"Do you want to prepare {spell.name}?") == "y":
+                        print(f"preparing {spell.name}")
+                        availableslots[dex] -= 1
+                        prepared[dex].append(spell)
+        dex+=1
+        print(f"increase dex to {dex}")
+        if availableslots[dex] == 0:
+            continue
+prepare()
