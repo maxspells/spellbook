@@ -30,8 +30,8 @@ def printout(z): #debug printing function
         print(x.desc)
         print("_________________________________________________")
 
-def modifier(char): #calculates intelligence modifier for spells that use it
-    mod = math.floor((char.int-10)/2)
+def modifier(stat): #calculates intelligence modifier for spells that use it
+    mod = math.floor((stat-10)/2)
     return mod
 
 def bonusspells(char): #calculates bonus spells based on intelligence stat
@@ -87,5 +87,5 @@ def prepare():
         print(f"increase dex to {dex}")
         if availableslots[dex] == 0:
             continue
-mon = modifier(chr)
+mon = modifier(chr.int)
 print(mon)
