@@ -1,4 +1,5 @@
 import sys
+import math
 sys.path.append('modules')
 import inspect
 import importlib
@@ -30,28 +31,7 @@ def printout(z): #debug printing function
         print("_________________________________________________")
 
 def modifier(char): #calculates intelligence modifier for spells that use it
-    mod = 0
-    match char.int:
-        case 6 | 7:
-            mod = -2
-        case 8 | 9:
-            mod = -1
-        case 10 | 11:
-            mod = 0
-        case 12 | 13:
-            mod = 1
-        case 14 | 15:
-            mod = 2
-        case 16 | 17:
-            mod = 3
-        case 18 | 19:
-            mod = 4
-        case 20 | 21:
-            mod = 5
-        case 22 | 23:
-            mod = 6
-        case 24 | 25:
-            mod = 7
+    mod = math.floor((char.int-10)/2)
     return mod
 
 def bonusspells(char): #calculates bonus spells based on intelligence stat
@@ -107,4 +87,5 @@ def prepare():
         print(f"increase dex to {dex}")
         if availableslots[dex] == 0:
             continue
-prepare()
+mon = modifier(chr)
+print(mon)
