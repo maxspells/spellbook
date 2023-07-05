@@ -1,4 +1,5 @@
 class chr:
+    level = 3
     name = "Asha Greywynd"
     str = 10
     dex = 14
