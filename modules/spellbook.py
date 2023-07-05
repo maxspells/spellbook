@@ -38,7 +38,7 @@ class detect_magic:
     
 class light:
     sp_lvl = 0
-    name = "light"
+    name = "Light"
     desc = """This spell causes a touched object to glow like a torch, shedding normal 
     light in a 20-foot radius from the point touched, and increasing the light level for 
     an additional 20 feet by one step, up to normal light (darkness becomes dim light, 

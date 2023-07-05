@@ -70,7 +70,17 @@ def perday(char): #calculates how many spells per day can be prepared per spell 
     return spd
 
 
-
+def writespells():
+    w = open("preparedspells.txt","w")
+    dex = 0
+    for each in range(len(prepared[dex])):
+        w.write(str(dex) + "\n" + "\n")
+        for i in prepared[dex]:
+            w.write(i.name + "\n")
+            w.write(i.desc + "\n" + "\n")
+        w.write("\n")
+        dex+=1
+    w.close()
 
 #[4, 4, 2, 1, 1, 1, 0, 0, 0, 0]
 def prepare():
@@ -128,3 +138,4 @@ def start():
         print("character.py not found")   
 start()
 prepare()
+writespells()
