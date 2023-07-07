@@ -6,10 +6,7 @@ import inspect
 import importlib
 import os
 import os.path
-#import modules.spellbook as spellbook
-import modules.character as character
-from modules.character import chr
-#from modules.spellbook import *
+from modules.character import *
 
 book = [],[]
 prepared = [],[]
@@ -37,30 +34,11 @@ def modifier(stat): #calculates intelligence modifier for spells that use it
     mod = math.floor((stat-10)/2)
     return mod
 
-def bonusspells(char): #calculates bonus spells based on intelligence stat
-    bonus = [0,0,0,0,0,0,0,0,0,0]
-    match char.int:
-        case 12 | 13:
-            bonus = [0,1,0,0,0,0,0,0,0,0]
-        case 14 | 15:
-            bonus = [0,1,1,0,0,0,0,0,0,0]
-        case 16 | 17:
-            bonus = [0,1,1,1,0,0,0,0,0,0]
-        case 18 | 19:
-            bonus = [0,1,1,1,1,0,0,0,0,0]
-        case 20 | 21:
-            bonus = [0,2,1,1,1,1,0,0,0,0]
-        case 22 | 23:
-            bonus = [0,2,2,1,1,1,0,0,0,0]
-        case 24 | 25:
-            bonus = [0,2,2,2,1,1,1,1,0,0]
-    return bonus
-
 def perday(char): #calculates how many spells per day can be prepared per spell level
     spd = []
     z = 0
-    bonus = bonusspells(char)
-    core = char.spellsperday
+    bonus = chr_spells.bonus
+    core = chr_spells.spellsperday
     for i in range(len(core)):
         if(core[z]>0): # if you can't cast spells of this level, skips adding bonus
             spd.append(core[z]+bonus[z]) 
@@ -68,7 +46,6 @@ def perday(char): #calculates how many spells per day can be prepared per spell 
             spd.append(core[z])
         z+=1
     return spd
-
 
 def writespells():
     w = open("preparedspells.txt","w")
