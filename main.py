@@ -8,8 +8,8 @@ import os
 import os.path
 from modules.character import *
 
-book = [],[]
-prepared = [],[]
+book = [[],[],[],[],[],[],[],[],[],[]]
+prepared = []
 
 # checks spellbook.py for classes. If it's a class, imports it and adds it to an array and returns array
 def load_spells(module_name): 
@@ -22,13 +22,6 @@ def load_spells(module_name):
 allspells = load_spells('modules.spellbook')
 def storespell(i): #sorts spell into book array by spell level
     book[i.sp_lvl].append(i)
-
-def printout(z): #debug printing function
-    for x in book[z]:
-        print(x.name)
-        print(x.range)
-        print(x.desc)
-        print("_________________________________________________")
 
 def modifier(stat): #calculates intelligence modifier for spells that use it
     mod = math.floor((stat-10)/2)
@@ -49,17 +42,16 @@ def perday(char): #calculates how many spells per day can be prepared per spell 
 
 def writespells():
     w = open("preparedspells.txt","w")
-    dex = 0
-    for each in range(len(prepared[dex])):
-        w.write(str(dex) + "\n" + "\n")
-        for i in prepared[dex]:
-            w.write(i.name + "\n")
-            w.write(i.desc + "\n" + "\n")
+    header = -1
+    for i in prepared:
+        if header < i.sp_lvl:
+            w.write("Level " + str(i.sp_lvl) + " spells" + "\n" + "-----------------" + "\n")
+            header = i.sp_lvl
+        w.write("-" + i.name + "-" + "\n" + "\n")
+        w.write(i.desc + "\n" + "\n")
         w.write("\n")
-        dex+=1
     w.close()
 
-#[4, 4, 2, 1, 1, 1, 0, 0, 0, 0]
 def prepare():
     dex = 0
     availableslots = perday(chr)
@@ -70,15 +62,17 @@ def prepare():
             dex2+=1
     wait()
     art()
+    print(chr.name)
     while(availableslots[dex]>0):
         if (dex<=(len(book)-1)):
             for spell in book[dex]:
-                print(f"preparing level {spell.sp_lvl} spells")
                 if availableslots[dex]>0:
-                    if input(f"Do you want to prepare {spell.name}?") == "y":
-                        print(f"preparing {spell.name}")
+                    art()
+                    print(chr.name)
+                    print(f"preparing level {spell.sp_lvl} spells, {availableslots[dex]} remaining.")
+                    if input(f"Do you want to prepare {spell.name}? y/n:") == "y":
                         availableslots[dex] -= 1
-                        prepared[dex].append(spell)
+                        prepared.append(spell)
         dex+=1
         print(f"increase dex to {dex}")
         if availableslots[dex] == 0:
@@ -92,7 +86,8 @@ def art():
   // ~ ~ ~~ | ~~~ ~~ \\  
  //________.|.________\\ 
 `----------`-'----------'
-        Spellbook v0.1⠀""")
+        Spellbook
+https://github.com/maxspells""")
 def wait():
     print("Press any key")
     m.getch()
@@ -105,14 +100,14 @@ def start():
         import modules.spellbook as spellbook
         for i in allspells:
             storespell(i)
-        print("spellbook.py found, spells imported")
+        print("spellbook.py found")
     else:
         print("No spellbook.py file found in modules folder")
     if (os.path.isfile("modules/character.py")==True):
         print("character.py found")
-        import modules.character as chr
     else:
         print("character.py not found")   
 start()
 prepare()
 writespells()
+os.system('cls')
