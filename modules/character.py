@@ -1,4 +1,5 @@
 class chr:
+    pc_class = "Wizard"
     level = 4
     name = "Asha Greywynd"
     str = 10

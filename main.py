@@ -6,10 +6,34 @@ import inspect
 import importlib
 import os
 import os.path
+import requests
 from modules.character import *
-
+newbook = []
 book = [[],[],[],[],[],[],[],[],[],[]]
 prepared = []
+
+def create_spellbook(lvl):
+    list = requests.get(f"https://pfapi.whizkid.dev/api/Spell/Class/{chr.pc_class}?level={lvl}&page=1&limit=100").json()
+    for i in list:
+        query = False
+        if lvl == 0 and chr.pc_class == "Wizard":
+            newbook.append(i)
+        else:
+            while query == False:
+                art()
+                print(f"Do you want to add {i['name']} to your spellbook?")
+                prompt = input("y/n or d for description:")
+                if prompt == "y":
+                    newbook.append(i)
+                    query = True
+                elif prompt == "d":
+                    print(i["description"])
+                    wait()
+                    continue
+                else:
+                    query = True
+
+
 
 # checks spellbook.py for classes. If it's a class, imports it and adds it to an array and returns array
 def load_spells(module_name): 
@@ -107,7 +131,21 @@ def start():
         print("character.py found")
     else:
         print("character.py not found")   
-start()
-prepare()
-writespells()
-os.system('cls')
+# start()
+# prepare()
+# writespells()
+# os.system('cls')
+create_spellbook(0)#spell level
+
+def writespellbook():
+    w = open("spells.txt","w")
+    header = -1
+    for i in newbook:
+        if header < i["classLevels"][chr.pc_class]:
+            w.write("Level " + str(i["classLevels"][chr.pc_class]) + " spells" + "\n" + "-----------------" + "\n")
+            header = i["classLevels"][chr.pc_class]
+        w.write("-" + i["name"] + "-" + "\n" + "\n")
+        w.write(i["description"] + "\n" + "\n")
+        w.write("\n")
+    w.close()
+writespellbook()
