@@ -8,6 +8,8 @@ class chr:
     int = 20
     wis = 16
     cha = 10
+    spellsknown = [0,15,5,4,0,0,0,0,0,0] #if wizard
+
 
 def charspells():
     match chr.level:

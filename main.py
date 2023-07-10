@@ -7,35 +7,80 @@ import importlib
 import os
 import os.path
 import requests
+import json
 from modules.character import *
 newbook = []
 book = [[],[],[],[],[],[],[],[],[],[]]
 prepared = []
 
-def create_spellbook(lvl):
-    list = requests.get(f"https://pfapi.whizkid.dev/api/Spell/Class/{chr.pc_class}?level={lvl}&page=1&limit=100").json()
-    for i in list:
-        query = False
-        if lvl == 0 and chr.pc_class == "Wizard":
-            newbook.append(i)
-        else:
-            while query == False:
+
+def query_spell(spell,splvl,spellsleft):
+    x = spellsleft
+    query = False
+    if splvl == 0 and chr.pc_class == "Wizard":
+        newbook.append(spell)
+    elif x>0:
+        while query == False:
+            print(f"Do you want to add {spell['name']} to your spellbook?")
+            prompt = input("y/n or d for description:")
+            if prompt == "y":
+                newbook.append(spell)
+                x-=1
+                query = True
+            elif prompt == "d":
                 art()
-                print(f"Do you want to add {i['name']} to your spellbook?")
-                prompt = input("y/n or d for description:")
-                if prompt == "y":
-                    newbook.append(i)
-                    query = True
-                elif prompt == "d":
-                    print(i["description"])
-                    wait()
-                    continue
-                else:
-                    query = True
+                print("\n")
+                print(f"-{spell['name']}-")
+                print("--------------------------------------")
+                print(f"Casting time:{spell['castingTime']}")
+                print(f"Target:{spell['targets']}")
+                print(f"Duration:{spell['duration']}")
+                print("--------------------------------------")
+                print(spell['description'])
+                wait()
+                continue
+            else:
+                query = True
+    return x
+
+def create_spellbook():
+    for lvl in range(10):
+        spellsleft = chr.spellsknown[lvl]
+        if spellsleft>0:
+            list = requests.get(f"https://pfapi.whizkid.dev/api/Spell/Class/{chr.pc_class}?level={lvl}&page=1&limit=100").json()
+            list2 = requests.get(f"https://pfapi.whizkid.dev/api/Spell/Class/{chr.pc_class}?level={lvl}&page=2&limit=100").json()
+            list3 = requests.get(f"https://pfapi.whizkid.dev/api/Spell/Class/{chr.pc_class}?level={lvl}&page=3&limit=100").json()
+            spellnumber = 1
+            totalspellsonlist = (len(list)+len(list2)+len(list3))
+            for i in list:
+                if spellsleft > 0:
+                    art()
+                    print(f"You can pick {spellsleft} more level {lvl} spells. {spellnumber}/{totalspellsonlist}")
+                    spellsleft = query_spell(i,lvl,spellsleft)
+                    spellnumber+=1
+            for i in list2:
+                if spellsleft > 0:
+                    art()
+                    print(f"You can pick {spellsleft} more level {lvl} spells. {spellnumber}/{totalspellsonlist}")
+                    spellsleft = query_spell(i,lvl,spellsleft)
+                    spellnumber+=1
+            for i in list3:
+                if spellsleft > 0:
+                    art()
+                    print(f"You can pick {spellsleft} more level {lvl} spells. {spellnumber}/{totalspellsonlist}")
+                    spellsleft = query_spell(i,lvl,spellsleft)
+                    spellnumber+=1
 
 
+def searchspell(spell,property):
+    sp = spell.replace(" ", "%20")
+    spell_obj = requests.get(f"https://pfapi.whizkid.dev/api/Spell/{sp}")
+    obj = spell_obj.json()
+    output = obj[f'{property}']
+    return output
 
-# checks spellbook.py for classes. If it's a class, imports it and adds it to an array and returns array
+
+# OUTDATED checks spellbook.py for classes. If it's a class, imports it and adds it to an array and returns array
 def load_spells(module_name): 
     module = importlib.import_module(module_name)
     list = []
@@ -43,6 +88,8 @@ def load_spells(module_name):
         if inspect.isclass(obj):
             list.append(obj)
     return list
+
+
 allspells = load_spells('modules.spellbook')
 def storespell(i): #sorts spell into book array by spell level
     book[i.sp_lvl].append(i)
@@ -51,7 +98,7 @@ def modifier(stat): #calculates intelligence modifier for spells that use it
     mod = math.floor((stat-10)/2)
     return mod
 
-def perday(char): #calculates how many spells per day can be prepared per spell level
+def perday(): #calculates how many spells per day can be prepared per spell level
     spd = []
     z = 0
     bonus = chr_spells.bonus
@@ -64,6 +111,7 @@ def perday(char): #calculates how many spells per day can be prepared per spell 
         z+=1
     return spd
 
+#OUTDATED
 def writespells():
     w = open("preparedspells.txt","w")
     header = -1
@@ -112,6 +160,7 @@ def art():
 `----------`-'----------'
         Spellbook
 https://github.com/maxspells""")
+
 def wait():
     print("Press any key")
     m.getch()
@@ -121,7 +170,7 @@ def start():
     wait()
     art()
     if (os.path.isfile("modules/spellbook.py")==True):
-        import modules.spellbook as spellbook
+        import modules.old_spellbook as old_spellbook
         for i in allspells:
             storespell(i)
         print("spellbook.py found")
@@ -135,9 +184,9 @@ def start():
 # prepare()
 # writespells()
 # os.system('cls')
-create_spellbook(0)#spell level
+create_spellbook()
 
-def writespellbook():
+def writespellbook():  #REWORK THIS TO SAVE KNOWN SPELL ARRAY LIST
     w = open("spells.txt","w")
     header = -1
     for i in newbook:
@@ -145,7 +194,12 @@ def writespellbook():
             w.write("Level " + str(i["classLevels"][chr.pc_class]) + " spells" + "\n" + "-----------------" + "\n")
             header = i["classLevels"][chr.pc_class]
         w.write("-" + i["name"] + "-" + "\n" + "\n")
+        w.write(f"Casting time:{i['castingTime']}" + "\n")
+        w.write(f"Target:{i['targets']}" + "\n")
+        w.write(f"Duration:{i['duration']}" + "\n")
+        w.write("--------------------------------------" + "\n")
         w.write(i["description"] + "\n" + "\n")
         w.write("\n")
     w.close()
+
 writespellbook()
