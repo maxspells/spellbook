@@ -11,10 +11,25 @@ book = [[],[],[],[],[],[],[],[],[],[]]
 prepared = []
 
 
+def sp_desc(spell):#print description of spell when called
+    art()
+    print("\n")
+    print(f"-{spell['name']}-")
+    print(f"{spell['classLevels']}")
+    print("--------------------------------------")
+    print(f"Casting time:{spell['castingTime']}")
+    print(f"Target:{spell['targets']}")
+    print(f"Range:{spell['range']}")
+    print(f"Duration:{spell['duration']}")
+    print("--------------------------------------")
+    print(spell['description'])
+    wait()
+    os.system('cls')
+
 def query_spell(spell,splvl,spellsleft):
     x = spellsleft
     query = False
-    if splvl == 0 and chr.pc_class == "Wizard":
+    if splvl == 0 and chr.pc_class == "Wizard": #Wizards start will all lvl 0 spells in spellbook
         newbook.append(spell)
     elif x>0:
         while query == False:
@@ -26,15 +41,7 @@ def query_spell(spell,splvl,spellsleft):
                 query = True
             elif prompt == "d":
                 art()
-                print("\n")
-                print(f"-{spell['name']}-")
-                print("--------------------------------------")
-                print(f"Casting time:{spell['castingTime']}")
-                print(f"Target:{spell['targets']}")
-                print(f"Duration:{spell['duration']}")
-                print("--------------------------------------")
-                print(spell['description'])
-                wait()
+                sp_desc(spell)
                 continue
             else:
                 query = True
@@ -43,13 +50,12 @@ def query_spell(spell,splvl,spellsleft):
 def splist_get(pc_class,level,page):
     spelllist = requests.get(f"https://pfapi.whizkid.dev/api/Spell/Class/{pc_class}?level={level}&page={page}&limit=100").json()
     return spelllist
+
 def splist_total(pc_class,level):
     number = 0
     for i in range(5):
         number+=len(splist_get(pc_class,level,(i+1)))
     return number
-
-
 
 def create_spellbook():
     for lvl in range(10):
@@ -66,12 +72,14 @@ def create_spellbook():
                         spellsleft = query_spell(i,lvl,spellsleft)
                         spellnumber+=1
 
-def searchspell(spell,property):
+def searchspell(spell):
     sp = spell.replace(" ", "%20")
     spell_obj = requests.get(f"https://pfapi.whizkid.dev/api/Spell/{sp}")
-    obj = spell_obj.json()
-    output = obj[f'{property}']
-    return output
+    if spell_obj.status_code == 404:
+        return spell_obj.status_code
+    else:
+        obj = spell_obj.json()
+        return obj
 
 def modifier(stat): #calculates intelligence modifier for spells that use it
     mod = math.floor((stat-10)/2)
@@ -160,5 +168,37 @@ def writespellbook():  #REWORK THIS TO SAVE KNOWN SPELL ARRAY LIST
         w.write("\n")
     w.close()
 
-create_spellbook()
-writespellbook()
+def search_func():
+    while True:
+        art()
+        print("Type q to return to menu")
+        prompt = input("Search a spell:")
+        search = searchspell(prompt)
+        if prompt == "q":
+            break
+        elif search == 404:
+            print("Can't find spell")
+            wait()
+        else:
+            sp_desc(search)
+def main():
+    while True:
+        art()
+        print("Create a spellbook 'b'")
+        print("Search a spell = 's'")
+        print("Quit = 'q")
+        prompt = input(':')
+        if prompt == "b":
+            create_spellbook()
+            writespellbook()
+        elif prompt == "s":
+            search_func()
+        elif prompt == "q":
+            break
+        else:
+            continue
+main()
+
+search_func()
+# create_spellbook()
+# writespellbook()
