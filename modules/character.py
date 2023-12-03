@@ -1,8 +1,9 @@
 from math import floor
 class character:
-    def __init__(self,name,pc_class,stat_dict):
+    def __init__(self, name, pc_class, level, stat_dict):
         self.name = name
-        self.pc_class = pc_class    
+        self.pc_class = pc_class
+        self.level = level
         self.ability_scores = stat_dict
         self.ability_modifiers = character.get_modifier_dict(self.ability_scores)
 
@@ -51,9 +52,10 @@ class character:
         return floor((stat-10)/2)
 
 class newcharacter(character):
-    def __init__(self,name,pc_class,stat_array):
+    def __init__(self, name, pc_class, level, stat_array):
         self.name = name
         self.pc_class = pc_class
+        self.level = level
         self.ability_scores = newcharacter.get_ability_dict(stat_array)
         self.ability_modifiers = character.get_modifier_dict(self.ability_scores)
 
@@ -68,3 +70,4 @@ class newcharacter(character):
         else:
             return False
         return stat_dict
+

@@ -1,5 +1,6 @@
 import os
 import json
+import ast
 from random import randint
 from character import *
 
@@ -9,10 +10,12 @@ class handler:
     def check_for_sheet():
         if os.path.isfile('sheet.txt') == False:
             print('sheet.txt not found, creating new sheet...')
-            handler.pc_creator()
+            return handler.pc_creator()
+            
         else:
             print("sheet.txt found...")
-            handler.load_sheet()
+            return handler.load_sheet()
+            
 
     @staticmethod
     def load_sheet():
@@ -20,20 +23,20 @@ class handler:
         with open('sheet.txt','r') as sheet:
             for line in sheet.readlines():    
                 char.append(line.replace("\n",""))
-        new_pc = character(char[0],char[1],json.loads(char[2]))
+        new_pc = character(char[0],char[1],char[2],ast.literal_eval(char[3]))
         return new_pc
 
     @staticmethod
     def pc_creator():
         name = input("Input your character name: ")
         pc_class = input("Input character class: ").capitalize()
-        print(name)
-        print(pc_class)
-        new_pc = newcharacter(name,pc_class,handler.array_selector())
+        pc_level = int(input("what level is the character: "))
+        new_pc = newcharacter(name,pc_class,pc_level,handler.array_selector())
         with open('sheet.txt','w') as sheet:
             sheet.write(f"{new_pc.name}\n")
             sheet.write(f"{new_pc.pc_class}\n")
-            sheet.write(str(json.dumps(f"{new_pc.ability_scores}\n")))
+            sheet.write(f"{new_pc.level}\n")
+            sheet.write(str(f"{new_pc.ability_scores}"))
         return new_pc
 
     @staticmethod
@@ -92,10 +95,4 @@ class handler:
             stat_array.append(stat_to_append)
         return stat_array
     
-print(type(handler.check_for_sheet()))
-
-
-
-
-
-    
+print(handler.check_for_sheet().ability_modifiers)
