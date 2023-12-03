@@ -130,6 +130,7 @@ def main():
         art()
         print("Create a spellbook 'b'")
         print("Search a spell = 's'")
+        print("Create a new character = 'c'")
         print("Quit = 'q")
         prompt = input(':')
         if prompt == "b":
@@ -137,6 +138,11 @@ def main():
             writespellbook()
         elif prompt == "s":
             search_func()
+        elif prompt == "c":
+            handler.pc_creator()
+            print("you will need to reopen the program to continue")
+            wait()
+            break
         elif prompt == "q":
             break
         else:

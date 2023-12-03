@@ -16,7 +16,7 @@ class handler:
             return handler.load_sheet()
             
 
-    @staticmethod
+    @staticmethod #loads sheet.txt and turns it into a character object and returns the object
     def load_sheet():
         char = []
         with open('sheet.txt','r') as sheet:
@@ -25,8 +25,8 @@ class handler:
         new_pc = character(char[0],char[1],char[2],ast.literal_eval(char[3]))
         return new_pc
 
-    @staticmethod
-    def pc_creator():
+    @staticmethod #creates a character object and saves it as sheet.txt
+    def pc_creator(): 
         name = input("Input your character name: ")
         pc_class = input("Input character class: ").capitalize()
         pc_level = int(input("what level is the character: "))
@@ -38,7 +38,7 @@ class handler:
             sheet.write(str(f"{new_pc.ability_scores}"))
         return new_pc
 
-    @staticmethod
+    @staticmethod #returns an array of 6 stats depending on preference for use in pc_creator()
     def array_selector():
         in_loop = True
         while in_loop == True:
@@ -79,8 +79,8 @@ class handler:
                     print("invalid input")
                     continue
     
-    @staticmethod
-    def random_roll(): #rolls 4d6, drops lowest adds the other 3, does this 6 times to make a stat array
+    @staticmethod #rolls 4d6, drops lowest adds the other 3, does this 6 times to make a stat array.
+    def random_roll(): 
         stat_array = []
         for _ in range(6):
             roll_array = []
@@ -95,7 +95,7 @@ class handler:
         return stat_array
     
 class spell_handler:
-    @staticmethod
+    @staticmethod #returns array of spells per level
     def core_spells(character_level):
         match character_level:
             case 1:
@@ -141,7 +141,7 @@ class spell_handler:
         return charspells
     
     @staticmethod
-    def bonusspells(primary_stat): #calculates bonus spells based on primary casting stat
+    def bonusspells(primary_stat): #calculates bonus spells per day based on primary casting stat
         match primary_stat:
             case 12 | 13:
                 bonus = [0,1,0,0,0,0,0,0,0,0]

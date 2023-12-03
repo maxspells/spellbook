@@ -9,7 +9,7 @@ class character:
         self.spells_known = [0,15,5,4,0,0,0,0,0,0] #TODO THIS IS A PLACEHOLDER, NEED TO MAKE FUNCTION TO CALCULATE THIS
 
     def check_primary_stat(pc_class):
-        match pc_class:
+        match pc_class: #checks primary casting stat used for bonus spells per day in spell_handlers.bonusspells
             case "Wizard":
                 return "Intelligence"
             case "Cleric":
