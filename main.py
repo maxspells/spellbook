@@ -96,7 +96,7 @@ def wait():
     print("Press any key")
     m.getch()
 
-def writespellbook():  #REWORK THIS TO SAVE KNOWN SPELL ARRAY LIST
+def writespellbook():  #TODO REWORK THIS TO SAVE KNOWN SPELL ARRAY LIST
     w = open("spellbook.txt","w")
     header = -1
     for i in newbook:

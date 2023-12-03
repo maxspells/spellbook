@@ -1,79 +1,70 @@
-class chr:
-    pc_class = "Wizard"
-    level = 4
-    name = "Asha Greywynd"
-    str = 10
-    dex = 14
-    con = 12
-    int = 20
-    wis = 16
-    cha = 10
-    spellsknown = [0,15,5,4,0,0,0,0,0,0] #if wizard
+from math import floor
+class character:
+    def __init__(self,name,pc_class,stat_dict):
+        self.name = name
+        self.pc_class = pc_class    
+        self.ability_scores = stat_dict
+        self.ability_modifiers = character.get_modifier_dict(self.ability_scores)
 
+    def check_class(pc_class): #TODO assign spells known and spells per day to this function and implement with all classes /sigh
+        match pc_class:
+            case "Wizard":
+                pass
+            case "Cleric":
+                pass
+            case "Ranger":
+                pass
+            case "Druid":
+                pass
+            case "Sorcerer":
+                pass
+            case _:#nothing matched #TODO implement this exception
+                return False
+            
+    def query_stat(stat):
+            ability_array = ["Strength",'Dexterity',"Constitution","Wisdom","Intelligence","Charisma"]
+            print(f"Where do you want to put your {stat}?:")
+            query = input(f"{ability_array[0]}:a {ability_array[1]}:d {ability_array[2]}:c {ability_array[3]}:w {ability_array[4]}:i {ability_array[5]}:r")
+            match query:
+                case "a":
+                    return ability_array.pop(0)
+                case "d":
+                    return ability_array.pop(1)
+                case "c":
+                    return ability_array.pop(2)
+                case "w":
+                    return ability_array.pop(3)
+                case "i":
+                    return ability_array.pop(4)
+                case "r":
+                    return ability_array.pop(5)
+                case _ :                    
+                    return False #TODO implement this exception
 
-def charspells():
-    match chr.level:
-        case 1:
-            charspells = [3,1,0,0,0,0,0,0,0,0]
-        case 2:
-            charspells = [4,2,0,0,0,0,0,0,0,0]
-        case 3:
-            charspells = [4,2,1,0,0,0,0,0,0,0]
-        case 4:
-            charspells = [4,3,2,0,0,0,0,0,0,0]
-        case 5:
-            charspells = [4,3,2,1,0,0,0,0,0,0]
-        case 6:
-            charspells = [4,3,3,2,0,0,0,0,0,0]
-        case 7:
-            charspells = [4,4,3,2,1,0,0,0,0,0]
-        case 8:
-            charspells = [4,4,3,3,2,0,0,0,0,0]
-        case 9:
-            charspells = [4,4,4,3,2,1,0,0,0,0]
-        case 10:
-            charspells = [4,4,4,3,3,2,0,0,0,0]
-        case 11:
-            charspells = [4,4,4,4,3,2,1,0,0,0]
-        case 12:
-            charspells = [4,4,4,4,3,3,2,0,0,0]
-        case 13:
-            charspells = [4,4,4,4,4,3,2,1,0,0]
-        case 14:
-            charspells = [4,4,4,4,4,3,3,2,0,0]
-        case 15:
-            charspells = [4,4,4,4,4,4,3,2,1,0]
-        case 16:
-            charspells = [4,4,4,4,4,4,3,3,2,0]
-        case 17:
-            charspells = [4,4,4,4,4,4,4,3,2,1]
-        case 18:
-            charspells = [4,4,4,4,4,4,4,3,3,2]
-        case 19:
-            charspells = [4,4,4,4,4,4,4,4,3,3]
-        case 20:
-            charspells = [4,4,4,4,4,4,4,4,4,4]
-    return charspells
+    def get_modifier_dict(stat_dict):
+        mod_dict = {"Strength":[],"Dexterity":[],"Constitution":[],"Wisdom":[],"Intelligence":[],"Charisma":[]}
+        for x in stat_dict:
+            mod_dict[x].append(character.get_modifier(stat_dict[x][0]))
+        return mod_dict
 
-def bonusspells(): #calculates bonus spells based on intelligence stat
-    match chr.int:
-        case 12 | 13:
-            bonus = [0,1,0,0,0,0,0,0,0,0]
-        case 14 | 15:
-            bonus = [0,1,1,0,0,0,0,0,0,0]
-        case 16 | 17:
-            bonus = [0,1,1,1,0,0,0,0,0,0]
-        case 18 | 19:
-            bonus = [0,1,1,1,1,0,0,0,0,0]
-        case 20 | 21:
-            bonus = [0,2,1,1,1,1,0,0,0,0]
-        case 22 | 23:
-            bonus = [0,2,2,1,1,1,0,0,0,0]
-        case 24 | 25:
-            bonus = [0,2,2,2,1,1,1,1,0,0]
-    return bonus
+    def get_modifier(stat):
+        return floor((stat-10)/2)
 
-class chr_spells:
-    spellsperday = charspells()
-    bonus = bonusspells()
+class newcharacter(character):
+    def __init__(self,name,pc_class,stat_array):
+        self.name = name
+        self.pc_class = pc_class
+        self.ability_scores = newcharacter.get_ability_dict(stat_array)
+        self.ability_modifiers = character.get_modifier_dict(self.ability_scores)
 
+    def get_ability_dict(stat_array):
+        print(f"checking stat list {stat_array}...")
+        if len(stat_array) == 6:
+            print(f"preparing to assign values to ability scores")
+            stat_dict = {"Strength":[],"Dexterity":[],"Constitution":[],"Wisdom":[],"Intelligence":[],"Charisma":[]}
+            stat_array.sort(reverse=True)
+            for stat in stat_array:
+                stat_dict[character.query_stat(stat)].append(stat)
+        else:
+            return False
+        return stat_dict
