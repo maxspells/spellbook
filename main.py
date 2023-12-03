@@ -6,6 +6,9 @@ import os
 import os.path
 from modules.pfapi import api
 from modules.character import *
+from modules.handlers import *
+
+charactersheet = handler.check_for_sheet() #loads/creates sheet.txt and turns into class obj
 newbook = []
 book = [[],[],[],[],[],[],[],[],[],[]]
 prepared = []
@@ -29,7 +32,7 @@ def sp_desc(spell):#print description of spell when called
 def query_spell(spell,splvl,spellsleft):
     x = spellsleft
     query = False
-    if splvl == 0 and chr.pc_class == "Wizard": #Wizards start will all lvl 0 spells in spellbook
+    if splvl == 0 and charactersheet.pc_class == "Wizard": #Wizards start will all lvl 0 spells in spellbook
         newbook.append(spell)
     elif x>0:
         while query == False:
@@ -49,12 +52,12 @@ def query_spell(spell,splvl,spellsleft):
 
 def create_spellbook():
     for lvl in range(10):
-        spellsleft = chr.spellsknown[lvl]
+        spellsleft = charactersheet.spells_known[lvl]
         if spellsleft>0:
-            totalspellsonlist = api.get_number_spells_perlvl(chr.pc_class,lvl)
+            totalspellsonlist = api.get_number_spells_perlvl(charactersheet.pc_class,lvl)
             spellnumber = 1
             for page in range(5):
-                splist = api.splist_get(chr.pc_class,lvl,(page+1))
+                splist = api.splist_get(charactersheet.pc_class,lvl,(page+1))
                 for i in splist:
                     if spellsleft > 0:
                         art()
@@ -69,8 +72,8 @@ def modifier(stat): #calculates intelligence modifier for spells that use it
 def perday(): #calculates how many spells per day can be prepared per spell level
     spd = []
     z = 0
-    bonus = chr_spells.bonus
-    core = chr_spells.spellsperday
+    bonus = spell_handler.bonusspells(character.check_primary_stat(charactersheet.pc_class))
+    core = spell_handler.core_spells(charactersheet.level)
     for i in range(len(core)):
         if(core[z]>0): # if you can't cast spells of this level, skips adding bonus
             spd.append(core[z]+bonus[z]) 
@@ -89,8 +92,8 @@ def art():
  //________.|.________\\ 
 `----------`-'----------'
         Spellbook
-https://github.com/maxspells
-""")
+https://github.com/maxspells""")
+    print(f"Sheet found: {charactersheet.name}, level {charactersheet.level} {charactersheet.pc_class}.\n")
 
 def wait():
     print("Press any key")
@@ -100,9 +103,9 @@ def writespellbook():  #TODO REWORK THIS TO SAVE KNOWN SPELL ARRAY LIST
     w = open("spellbook.txt","w")
     header = -1
     for i in newbook:
-        if header < i["classLevels"][chr.pc_class]:
-            w.write("Level " + str(i["classLevels"][chr.pc_class]) + " spells" + "\n" + "-----------------" + "\n")
-            header = i["classLevels"][chr.pc_class]
+        if header < i["classLevels"][charactersheet.pc_class]:
+            w.write("Level " + str(i["classLevels"][charactersheet.pc_class]) + " spells" + "\n" + "-----------------" + "\n")
+            header = i["classLevels"][charactersheet.pc_class]
         w.write("-" + i["name"] + "-" + "\n" + "\n")
         w.write(f"Casting time:{i['castingTime']}" + "\n")
         w.write(f"Target:{i['targets']}" + "\n")
@@ -138,8 +141,5 @@ def main():
             break
         else:
             continue
-main()
 
-search_func()
-# create_spellbook()
-# writespellbook()
+main()

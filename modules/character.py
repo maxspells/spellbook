@@ -6,19 +6,20 @@ class character:
         self.level = level
         self.ability_scores = stat_dict
         self.ability_modifiers = character.get_modifier_dict(self.ability_scores)
+        self.spells_known = [0,15,5,4,0,0,0,0,0,0] #TODO THIS IS A PLACEHOLDER, NEED TO MAKE FUNCTION TO CALCULATE THIS
 
-    def check_class(pc_class): #TODO assign spells known and spells per day to this function and implement with all classes /sigh
+    def check_primary_stat(pc_class):
         match pc_class:
             case "Wizard":
-                pass
+                return "Intelligence"
             case "Cleric":
-                pass
+                return "Wisdom"
             case "Ranger":
-                pass
+                return "Wisdom"
             case "Druid":
-                pass
+                return "Wisdom"
             case "Sorcerer":
-                pass
+                return "Charisma"
             case _:#nothing matched #TODO implement this exception
                 return False
             
@@ -58,6 +59,7 @@ class newcharacter(character):
         self.level = level
         self.ability_scores = newcharacter.get_ability_dict(stat_array)
         self.ability_modifiers = character.get_modifier_dict(self.ability_scores)
+        self.spells_known = [0,15,5,4,0,0,0,0,0,0] #TODO THIS IS A PLACEHOLDER, NEED TO MAKE FUNCTION TO CALCULATE THIS
 
     def get_ability_dict(stat_array):
         print(f"checking stat list {stat_array}...")

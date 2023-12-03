@@ -1,5 +1,4 @@
 import os
-import json
 import ast
 from random import randint
 from character import *
@@ -8,12 +7,12 @@ class handler:
 
     @staticmethod
     def check_for_sheet():
+        os.system('cls')
         if os.path.isfile('sheet.txt') == False:
             print('sheet.txt not found, creating new sheet...')
             return handler.pc_creator()
             
         else:
-            print("sheet.txt found...")
             return handler.load_sheet()
             
 
@@ -95,4 +94,67 @@ class handler:
             stat_array.append(stat_to_append)
         return stat_array
     
-print(handler.check_for_sheet().ability_modifiers)
+class spell_handler:
+    @staticmethod
+    def core_spells(character_level):
+        match character_level:
+            case 1:
+                charspells = [3,1,0,0,0,0,0,0,0,0]
+            case 2:
+                charspells = [4,2,0,0,0,0,0,0,0,0]
+            case 3:
+                charspells = [4,2,1,0,0,0,0,0,0,0]
+            case 4:
+                charspells = [4,3,2,0,0,0,0,0,0,0]
+            case 5:
+                charspells = [4,3,2,1,0,0,0,0,0,0]
+            case 6:
+                charspells = [4,3,3,2,0,0,0,0,0,0]
+            case 7:
+                charspells = [4,4,3,2,1,0,0,0,0,0]
+            case 8:
+                charspells = [4,4,3,3,2,0,0,0,0,0]
+            case 9:
+                charspells = [4,4,4,3,2,1,0,0,0,0]
+            case 10:
+                charspells = [4,4,4,3,3,2,0,0,0,0]
+            case 11:
+                charspells = [4,4,4,4,3,2,1,0,0,0]
+            case 12:
+                charspells = [4,4,4,4,3,3,2,0,0,0]
+            case 13:
+                charspells = [4,4,4,4,4,3,2,1,0,0]
+            case 14:
+                charspells = [4,4,4,4,4,3,3,2,0,0]
+            case 15:
+                charspells = [4,4,4,4,4,4,3,2,1,0]
+            case 16:
+                charspells = [4,4,4,4,4,4,3,3,2,0]
+            case 17:
+                charspells = [4,4,4,4,4,4,4,3,2,1]
+            case 18:
+                charspells = [4,4,4,4,4,4,4,3,3,2]
+            case 19:
+                charspells = [4,4,4,4,4,4,4,4,3,3]
+            case 20:
+                charspells = [4,4,4,4,4,4,4,4,4,4]
+        return charspells
+    
+    @staticmethod
+    def bonusspells(primary_stat): #calculates bonus spells based on primary casting stat
+        match primary_stat:
+            case 12 | 13:
+                bonus = [0,1,0,0,0,0,0,0,0,0]
+            case 14 | 15:
+                bonus = [0,1,1,0,0,0,0,0,0,0]
+            case 16 | 17:
+                bonus = [0,1,1,1,0,0,0,0,0,0]
+            case 18 | 19:
+                bonus = [0,1,1,1,1,0,0,0,0,0]
+            case 20 | 21:
+                bonus = [0,2,1,1,1,1,0,0,0,0]
+            case 22 | 23:
+                bonus = [0,2,2,1,1,1,0,0,0,0]
+            case 24 | 25:
+                bonus = [0,2,2,2,1,1,1,1,0,0]
+        return bonus
