@@ -158,3 +158,17 @@ class spell_handler:
             case 24 | 25:
                 bonus = [0,2,2,2,1,1,1,1,0,0]
         return bonus
+    
+    @staticmethod
+    def spells_per_day(pc_class,pc_level): #calculates how many spells per day can be prepared per spell level
+        spd = []
+        z = 0
+        bonus = spell_handler.bonusspells(character.check_primary_stat(pc_class))
+        core = spell_handler.core_spells(pc_level)
+        for i in range(len(core)):
+            if(core[z]>0): # if you can't cast spells of this level, skips adding bonus
+                spd.append(core[z]+bonus[z]) 
+            else:
+                spd.append(core[z])
+            z+=1
+        return spd

@@ -4,39 +4,25 @@ import msvcrt as m
 sys.path.append('modules')
 import os
 import os.path
+import time
 from modules.pfapi import api
 from modules.character import *
 from modules.handlers import *
+from modules.spell import spell
 
 charactersheet = handler.check_for_sheet() #loads/creates sheet.txt and turns into class obj
 newbook = []
 book = [[],[],[],[],[],[],[],[],[],[]]
 prepared = []
 
-
-def sp_desc(spell):#print description of spell when called
-    art()
-    print("\n")
-    print(f"-{spell['name']}-")
-    print(f"{spell['classLevels']}")
-    print("--------------------------------------")
-    print(f"Casting time:{spell['castingTime']}")
-    print(f"Target:{spell['targets']}")
-    print(f"Range:{spell['range']}")
-    print(f"Duration:{spell['duration']}")
-    print("--------------------------------------")
-    print(spell['description'])
-    wait()
-    os.system('cls')
-
 def query_spell(spell,splvl,spellsleft):
-    x = spellsleft
-    query = False
+    x = spellsleft   
     if splvl == 0 and charactersheet.pc_class == "Wizard": #Wizards start will all lvl 0 spells in spellbook
         newbook.append(spell)
     elif x>0:
+        query = False
         while query == False:
-            print(f"Do you want to add {spell['name']} to your spellbook?")
+            print(f"Do you want to add {spell.name} to your spellbook?")
             prompt = input("y/n or d for description:")
             if prompt == "y":
                 newbook.append(spell)
@@ -44,46 +30,45 @@ def query_spell(spell,splvl,spellsleft):
                 query = True
             elif prompt == "d":
                 art()
-                sp_desc(spell)
-                continue
+                spell.spell_description()
+                print("\n")
             else:
                 query = True
     return x
 
-def create_spellbook():
-    for lvl in range(10):
+def create_spellbook():    
+    wizard_exception = False
+    for lvl in range(10): #spells levels 0-9
         spellsleft = charactersheet.spells_known[lvl]
+        list_of_spell_obj = []    
         if spellsleft>0:
             totalspellsonlist = api.get_number_spells_perlvl(charactersheet.pc_class,lvl)
             spellnumber = 1
+            print("Sorting spell list...")
             for page in range(5):
-                splist = api.splist_get(charactersheet.pc_class,lvl,(page+1))
-                for i in splist:
-                    if spellsleft > 0:
+                sp_dict = api.splist_get(charactersheet.pc_class,lvl,(page+1))
+                for item in sp_dict:
+                    spell_obj = spell(item)
+                    list_of_spell_obj.append(spell_obj)
+            for sp_obj in list_of_spell_obj:                    
+                if spellsleft > 0:
+                    if lvl == 0  and charactersheet.pc_class == "Wizard": #this causes flashing if they are wizard, since wizards get all level 0 spells
+                        if wizard_exception == False:
+                            print("Adding all level 0 spells to spellbook")
+                            wizard_exception = True    
+                        spellsleft = query_spell(sp_obj,lvl,spellsleft)
+                        spellnumber+=1
+                    else:
                         art()
                         print(f"You can pick {spellsleft} more level {lvl} spells. {spellnumber}/{totalspellsonlist}")
-                        spellsleft = query_spell(i,lvl,spellsleft)
-                        spellnumber+=1
+                        spellsleft = query_spell(sp_obj,lvl,spellsleft)
+                        spellnumber+=1 
 
-def modifier(stat): #calculates intelligence modifier for spells that use it
-    mod = math.floor((stat-10)/2)
-    return mod
 
-def perday(): #calculates how many spells per day can be prepared per spell level
-    spd = []
-    z = 0
-    bonus = spell_handler.bonusspells(character.check_primary_stat(charactersheet.pc_class))
-    core = spell_handler.core_spells(charactersheet.level)
-    for i in range(len(core)):
-        if(core[z]>0): # if you can't cast spells of this level, skips adding bonus
-            spd.append(core[z]+bonus[z]) 
-        else:
-            spd.append(core[z])
-        z+=1
-    return spd
 
 def art():
     os.system('cls')
+    time.sleep(.1)
     print("""
       ______ ______
     _/      Y      \_
@@ -93,7 +78,7 @@ def art():
 `----------`-'----------'
         Spellbook
 https://github.com/maxspells""")
-    print(f"Sheet found: {charactersheet.name}, level {charactersheet.level} {charactersheet.pc_class}.\n")
+    print(f"{charactersheet.name}, level {charactersheet.level} {charactersheet.pc_class}.\n")
 
 def wait():
     print("Press any key")
@@ -102,16 +87,16 @@ def wait():
 def writespellbook():  #TODO REWORK THIS TO SAVE KNOWN SPELL ARRAY LIST
     w = open("spellbook.txt","w")
     header = -1
-    for i in newbook:
-        if header < i["classLevels"][charactersheet.pc_class]:
-            w.write("Level " + str(i["classLevels"][charactersheet.pc_class]) + " spells" + "\n" + "-----------------" + "\n")
-            header = i["classLevels"][charactersheet.pc_class]
-        w.write("-" + i["name"] + "-" + "\n" + "\n")
-        w.write(f"Casting time:{i['castingTime']}" + "\n")
-        w.write(f"Target:{i['targets']}" + "\n")
-        w.write(f"Duration:{i['duration']}" + "\n")
+    for spell in newbook:
+        if spell.classLevels[f"{charactersheet.pc_class}"] > header:
+            w.write(f"-------Level {header+1} spells --------\n")
+            header+=1
+        w.write("-" + spell.name + "-" + "\n" + "\n")
+        w.write(f"Casting time:{spell.castingTime}" + "\n")
+        w.write(f"Target:{spell.targets}" + "\n")
+        w.write(f"Duration:{spell.duration}" + "\n")
         w.write("--------------------------------------" + "\n")
-        w.write(i["description"] + "\n" + "\n")
+        w.write(spell.description + "\n" + "\n")
         w.write("\n")
     w.close()
 
@@ -120,11 +105,14 @@ def search_func():
         art()
         print("Type q to return to menu")
         prompt = input("Search a spell:")
-        search = api.search_spell(prompt)
+        newspell = spell(api.search_spell(prompt))
         if prompt == "q":
             break
         else:
-            sp_desc(search)
+            art()
+            newspell.spell_description()
+            wait()
+
 def main():
     while True:
         art()
@@ -149,3 +137,4 @@ def main():
             continue
 
 main()
+
