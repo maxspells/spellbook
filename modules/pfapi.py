@@ -23,18 +23,10 @@ class api:
         total_spells_allpages = 0
         print(f"Searching for level {level} {pc_class} spells...")
         for index in range(10):
-            number_on_page = len(api.splist_get(pc_class,level,index+1))
-           
+            number_on_page = len(api.splist_get(pc_class,level,index+1))          
             if number_on_page <= 0:
                 break
             else:                
                 total_spells_allpages += number_on_page
                 print(f"{total_spells_allpages} level {level} spells found")
         return total_spells_allpages
-
-
-
-
-        
-
-

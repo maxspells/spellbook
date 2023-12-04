@@ -68,7 +68,7 @@ def create_spellbook():
 
 def art():
     os.system('cls')
-    time.sleep(.1)
+    time.sleep(.05)
     print("""
       ______ ______
     _/      Y      \_
@@ -105,10 +105,10 @@ def search_func():
         art()
         print("Type q to return to menu")
         prompt = input("Search a spell:")
-        newspell = spell(api.search_spell(prompt))
         if prompt == "q":
             break
         else:
+            newspell = spell(api.search_spell(prompt))
             art()
             newspell.spell_description()
             wait()
@@ -137,4 +137,3 @@ def main():
             continue
 
 main()
-

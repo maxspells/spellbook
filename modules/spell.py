@@ -38,7 +38,4 @@ class spell:
         print(f"Duration:{self.duration}")
         print("--------------------------------------")
         print(self.description)
-
-
-
-
+        
