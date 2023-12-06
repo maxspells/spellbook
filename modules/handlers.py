@@ -1,17 +1,18 @@
 import os
 import ast
 from random import randint
+from pfapi import api
 from character import *
-
+from spell import spell
+import msvcrt as m
 class handler:
 
     @staticmethod
     def check_for_sheet():
         os.system('cls')
-        if os.path.isfile('sheet.txt') == False:
-            print('sheet.txt not found, creating new sheet...')
+        if os.path.isfile('sheet.data') == False:
+            print('character not found, creating new character...')
             return handler.pc_creator()
-            
         else:
             return handler.load_sheet()
             
@@ -19,7 +20,7 @@ class handler:
     @staticmethod #loads sheet.txt and turns it into a character object and returns the object
     def load_sheet():
         char = []
-        with open('sheet.txt','r') as sheet:
+        with open('sheet.data','r') as sheet:
             for line in sheet.readlines():    
                 char.append(line.replace("\n",""))
         new_pc = character(char[0],char[1],char[2],ast.literal_eval(char[3]))
@@ -31,7 +32,7 @@ class handler:
         pc_class = input("Input character class: ").capitalize()
         pc_level = int(input("what level is the character: "))
         new_pc = newcharacter(name,pc_class,pc_level,handler.array_selector())
-        with open('sheet.txt','w') as sheet:
+        with open('sheet.data','w') as sheet:
             sheet.write(f"{new_pc.name}\n")
             sheet.write(f"{new_pc.pc_class}\n")
             sheet.write(f"{new_pc.level}\n")
@@ -93,6 +94,107 @@ class handler:
                 stat_to_append += roll
             stat_array.append(stat_to_append)
         return stat_array
+
+class spellbook:
+    @staticmethod #returns True is spell is selected, or false if passed
+    def query_spell(spell_dict):       
+        inloop = True
+        while inloop == True:
+            print(f'Do you want to add {spell_dict['name']} to your spellbook?')
+            query = input("y/n or 'd' for description")
+            if query == "y":
+                inloop = False
+                return True
+            elif query == "n":
+                inloop = False
+                return False
+            elif query == "d":
+                newspell = spell(spell_dict)
+                newspell.spell_description()
+                m.getch()
+                os.system('cls')
+            else:
+                continue
+
+    #input pc_class and spells known
+    #return array of selected spell dictionaries
+    def parse_all_spells(pc_class,spells_known_array):
+        selected_spells = [] #list of spell dicts
+        wizard_exception = False #checks if all level 0 spells need to be auto added later
+        for lvl in range(10): #spells level 0-9
+            if pc_class == 'Wizard' and lvl == 0:
+                print("Wizards start with all level 0 spells, adding to spellbook...")
+                wizard_exception = True
+            list_current_level_spell_dicts = []
+            spellsleft = spells_known_array[lvl]
+            total_spells_perlvl = 0
+            if spellsleft > 0:
+                page_index = 1
+                searching_for_spells = True
+                while searching_for_spells == True: #checks until no results returned
+                    page_array = api.splist_get(pc_class,lvl,page_index)
+                    length = len(page_array)
+                    if length > 0:
+                        for spell_dict in page_array:
+                            list_current_level_spell_dicts.append(spell_dict)
+                        total_spells_perlvl+=length
+                        print(f'{total_spells_perlvl} lvl {lvl} spells found')
+                        page_index+=1
+                    else:
+                        searching_for_spells = False
+            for spell in list_current_level_spell_dicts:
+                if wizard_exception == True and lvl == 0:
+                    selected_spells.append(spell)
+                elif spellsleft > 0:
+                    os.system('cls')
+                    print(f"You can select {spellsleft} more level {lvl} spells {list_current_level_spell_dicts.index(spell)+1}/{total_spells_perlvl}")
+                    if spellbook.query_spell(spell) == True:
+                        selected_spells.append(spell)
+                        spellsleft-=1
+        spellbook.write_spellbook_data(selected_spells)
+        return selected_spells
+
+    @staticmethod #input spell dict list, writes to file
+    def write_spellbook_data(spell_dict_list):
+        with open('spellbook.data','w') as book:
+            for spell_dict in spell_dict_list:
+                book.write(str(spell_dict)+"\n")
+
+    @staticmethod
+    def write_spellbook_txt(spell_dict_list,sheet):
+        with open('spellbook.txt','w') as w:
+            header = -1
+            for sp in spell_dict_list:
+                newspell = spell(sp)
+                if newspell.classLevels[f"{sheet.pc_class}"] > header:
+                    w.write(f"-------Level {header+1} spells --------\n")
+                    header+=1
+                w.write("-" + newspell.name + "-" + "\n" + "\n")
+                w.write(f"Casting time:{newspell.castingTime}" + "\n")
+                w.write(f"Target:{newspell.targets}" + "\n")
+                w.write(f"Duration:{newspell.duration}" + "\n")
+                w.write("--------------------------------------" + "\n")
+                w.write(newspell.description + "\n" + "\n")
+                w.write("\n")
+
+    @staticmethod
+    def load_spellbook_data(): #loads file, returns array of dictionaries
+        book_array = [] #full of dictionaries
+        with open('spellbook.data','r') as book:
+            for line in book.readlines():
+                book_array.append(ast.literal_eval(line))
+        return book_array
+    
+    @staticmethod
+    def check_for_spellbook():
+        if os.path.isfile('spellbook.data') == True:
+            return spellbook.load_spellbook_data()
+        else:
+            return False
+        
+    @staticmethod
+    def add_newspell_to_spellbook():
+        pass
     
 class spell_handler:
     @staticmethod #returns array of spells per level

@@ -4,8 +4,8 @@ class api:
     @staticmethod
     def splist_get(pc_class,level,page):
         try:#TODO implement proper exception
-            spell_list = get(f"https://pfapi.whizkid.dev/api/Spell/Class/{pc_class}?level={level}&page={page}&limit=100").json()
-            return spell_list
+            spell_list_dict = get(f"https://pfapi.whizkid.dev/api/Spell/Class/{pc_class}?level={level}&page={page}&limit=100").json()
+            return spell_list_dict
         except:
             print("An exception has occured api.splist_get method")
     

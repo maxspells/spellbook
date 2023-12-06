@@ -1,5 +1,3 @@
-from pfapi import api
-import os
 class spell:
     def __init__(self,spell_dict):
         self.name = spell_dict["name"]
