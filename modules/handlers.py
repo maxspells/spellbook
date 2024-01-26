@@ -5,11 +5,12 @@ from pfapi import api
 from character import *
 from spell import spell
 import msvcrt as m
+from main import art
 class handler:
 
     @staticmethod
     def check_for_sheet():
-        os.system('cls')
+        art()
         if os.path.isfile('sheet.data') == False:
             print('character not found, creating new character...')
             return handler.pc_creator()
@@ -30,8 +31,9 @@ class handler:
     def pc_creator(): 
         name = input("Input your character name: ")
         pc_class = input("Input character class: ").capitalize()
-        pc_level = int(input("what level is the character: "))
-        new_pc = newcharacter(name,pc_class,pc_level,handler.array_selector())
+        pc_level = int(input("What level is the character: "))
+        stat_array = handler.array_selector()
+        new_pc = newcharacter(name,pc_class,pc_level,stat_array)
         with open('sheet.data','w') as sheet:
             sheet.write(f"{new_pc.name}\n")
             sheet.write(f"{new_pc.pc_class}\n")
@@ -42,9 +44,10 @@ class handler:
     @staticmethod #returns an array of 6 stats depending on preference for use in pc_creator()
     def array_selector():
         in_loop = True
-        while in_loop == True:
+        while in_loop:
             array_standard = [16, 15, 14, 13, 10, 10]
             array_heroic = [18, 16, 14, 12, 10, 10]
+            art()
             print("Which array would you like to use for your stats?")
             print(f"Standard array: {array_standard}")
             print(f"Heroic array: {array_heroic}")
@@ -116,7 +119,6 @@ class spellbook:
             else:
                 continue
 
-    #input pc_class and spells known
     #return array of selected spell dictionaries
     def parse_all_spells(pc_class,spells_known_array):
         selected_spells = [] #list of spell dicts

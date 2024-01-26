@@ -12,9 +12,12 @@ from modules.spell import spell
 
 def main():
     while True:
+        global charactersheet
+        global book
         charactersheet = handler.check_for_sheet() #loads/creates sheet.txt and turns into class obj
         book = spellbook.check_for_spellbook()
-        art(charactersheet,book)
+        art()
+        header(charactersheet,book)
         if book == False:
             print("Create a spellbook 'b'")
         else:
@@ -41,7 +44,7 @@ def main():
             continue
 
 
-def art(sheet,book):
+def art():
     os.system('cls')
     time.sleep(.05)
     print("""
@@ -52,7 +55,10 @@ def art(sheet,book):
  //________.|.________\\ 
 `----------`-'----------'
         Spellbook
-https://github.com/maxspells""")
+https://github.com/maxspells
+          """)
+    
+def header(sheet,book):
     print(f"{sheet.name}, level {sheet.level} {sheet.pc_class}.")
     if book != False:
         print("Spellbook data loaded.\n")
@@ -65,17 +71,18 @@ def wait():
 def search_func():
     while True:
         art()
+        header(charactersheet,book)
         print("Type q to return to menu")
         prompt = input("Search a spell:")
         if prompt == "q":
             break
         else:
             newspell = spell(api.search_spell(prompt))
-            art()
+            art(charactersheet,book)
             newspell.spell_description()
             wait()
 
 
-
-main()
+if __name__ == "__main__":
+    main()
 
