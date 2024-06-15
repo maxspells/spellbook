@@ -47,7 +47,8 @@ def main():
 def art():
     os.system('cls')
     time.sleep(.05)
-    print("""
+    print("""s
+          
       ______ ______
     _/      Y      \_
    // ~~ ~~ | ~~ ~  \\
@@ -55,13 +56,14 @@ def art():
  //________.|.________\\ 
 `----------`-'----------'
         Spellbook
-https://github.com/maxspells
-          """)
+https://github.com/maxspells""")
     
 def header(sheet,book):
     print(f"{sheet.name}, level {sheet.level} {sheet.pc_class}.")
     if book != False:
         print("Spellbook data loaded.\n")
+    else:
+        print('\n')
 
 def wait():
     print("Press any key")
@@ -78,7 +80,7 @@ def search_func():
             break
         else:
             newspell = spell(api.search_spell(prompt))
-            art(charactersheet,book)
+            art()
             newspell.spell_description()
             wait()
 
